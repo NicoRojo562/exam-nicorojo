@@ -6,14 +6,13 @@ This project is an **ETL pipeline** built with **Apache Airflow**, **MySQL**, an
 
 ## Table of Contents
 1. [Technologies Used](#technologies-used)
-2. [Project Structure](#project-structure)
-3. [How to Run the Project](#how-to-run-the-project)
+2. [How to Run the Project](#how-to-run-the-project)
    - [Running with Docker](#running-with-docker)
    - [Running Locally](#running-locally)
-4. [Accessing Apache Airflow](#accessing-apache-airflow)
-5. [Connecting to MySQL Database](#connecting-to-mysql-database)
-6. [Viewing Data in Jupyter Notebook](#viewing-data-in-jupyter-notebook)
-7. [Author](#author)
+3. [Accessing Apache Airflow](#accessing-apache-airflow)
+4. [Connecting to MySQL Database](#connecting-to-mysql-database)
+5. [Viewing Data in Jupyter Notebook](#viewing-data-in-jupyter-notebook)
+6. [Author](#author)
 
 ---
 
@@ -52,9 +51,10 @@ This will start:
 - A **MySQL database** on port **3307**
 - An **Airflow instance** on port **8080**
 
+- NOW JUMP TO [Accessing Apache Airflow](#accessing-apache-airflow)
 ---
 
-### Running Locally (Without Docker)
+### Running Locally
 If you prefer to run the project without Docker, follow these steps:
 
 #### Step 1: Create a Python virtual environment
@@ -99,7 +99,7 @@ Once the project is running, go to:
 
 Default credentials are not that easy to find. Recomendation: create a new Airflow admin user, run:
 ```sh
-airflow users create \
+docker exec -it airflow airflow users create \
     --username admin2 \
     --firstname Nicolas \
     --lastname Rojo \
@@ -107,7 +107,12 @@ airflow users create \
     --email yo@ex.com \
     --password admin
 ```
+in windows better use
+```sh
+docker exec -it airflow airflow users create --username admin2 --firstname Nicolas --lastname Rojo --role Admin --email yo@ex.com --password admin
+```
 
+#### 💡 Note: at this point you will have to manually trigger the aviation_etl DAG to start the process.
 ---
 
 ## Connecting to MySQL Database
@@ -119,10 +124,10 @@ OR in the container
 ```sh
 docker exec -it mysql-db mysql -uroot -proot 
 ```
-Then check if the data is loaded:
+This connection will be helpful to check if the data is loaded:
 ```sql
 USE testfligoo;
-SELECT * FROM testdata LIMIT 5;
+SELECT COUNT(*) FROM testdata;
 ```
 
 ---
@@ -135,7 +140,7 @@ To analyze the extracted data using **Jupyter Notebook**:
 jupyter notebook
 ```
 
-#### Step 2: Connect to the MySQL Database
+#### Step 2: Connect to the MySQL Database (notebook already set up to be executed)
 Inside a Jupyter Notebook cell, run:
 ```python
 from sqlalchemy import create_engine
