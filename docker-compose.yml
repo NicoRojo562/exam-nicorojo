@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: airflow_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+  
+  airflow:
+    build: .
+    container_name: airflow
+    restart: always
+    depends_on:
+      - mysql-db
+    env_file:
+      - .env
+    environment:
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=mysql+mysqlconnector://root:root@mysql-db/airflow_db
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/scripts:/opt/airflow/scripts
+
+volumes:
+  mysql_data:
